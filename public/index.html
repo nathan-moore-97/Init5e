@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+       <title>Init5e Tracker</title>
+       <!-- CoreUI -->
+       <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui@3.0.0-rc.0/dist/css/coreui.min.css">
+       <!-- Spot check CSS -->
+       <link rel="stylesheet" href="css/index.css">
+       <!-- JQuery -->
+       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+       <!-- Latest compiled JavaScript -->
+       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div id="pageHeading" class="jumbotron vertical-center">
+            <div id="hud" class="container">
+                <div class="row">
+                    <div class="col">
+                        <h1>Init5e</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h3>Currently:</h3>
+                        <p id="currentCharacter">none</p>
+                    </div>
+                    <div class="col">
+                        <h3>Up Next:</h3>
+                        <p id="nextCharacter">none</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary inline" onclick="upNext()">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="card-deck">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Add Character to Initiative</h5>
+                    <p class="card-text">Use this form to add a new character to the Initiative Order</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Character Details</h5>
+                    <p class="card-text">Information on the current character in the order</p>
+                    <p id="detailsCharName" class="card-text"><strong>No Character</strong></p>
+                    <p id="isNPC" class="card-text">(NPC)</p>
+                    <p id="detailsCharDexMod" class="card-text"><strong>DEX: </strong>none</p>
+                    <p id="detailsCharDesc" class="card-text"><strong>Notes: </strong>none</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Initiative Order</h5>
+                    <ul id="orderListGroup" class="list-group list-group-flush"></ul>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="js/index.js"></script>
+</html>

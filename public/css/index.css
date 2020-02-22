@@ -1,0 +1,19 @@
+#hud {
+    margin-left: 15%;
+}
+
+#dashboard {
+    margin-left: 7%;
+    margin-right: 7%;
+}
+
+#isNPC {
+    display: none;
+}
+
+.card {
+    max-height: 400px;
+    margin-bottom: 10px;
+    overflow:scroll;
+    -webkit-overflow-scrolling: touch;
+}
