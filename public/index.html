@@ -38,22 +38,78 @@
         </div>
 
         <div id="dashboard" class="card-deck">
+            <!-- New character form -->
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Add Character to Initiative</h5>
                     <p class="card-text">Use this form to add a new character to the Initiative Order</p>
+                    <form>
+                        <div class="form-group">
+                            <label for="characterNameField">Name / Monster</label>
+                            <input type="text" class="form-control" id="characterNameField" placeholder="Enter the character/monster name">
+                        </div>
+                        <container>
+                            <div class="row">
+                                <div class="col">
+                                    <div class ="form-group">
+                                        <label for="dexModSelector">DEX Modifier</label>
+                                        <input type="number" class="form-control" id="dexModSelector" placeholder="Dex Mod">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="advOnInitSelect">Roll Init with Adv</label>
+                                        <input type="checkbox" class="form-control" id="advOnInitSelect">
+                                    </div>
+                                </div>
+                            </div>
+                        </container>
+                        <div class="form-group">
+                            <label for="descriptionField">Description / Notes</label>
+                            <textarea class="form-control" id="descriptionField" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+
                 </div>
             </div>
+
+            <!-- Character details card -->
+
             <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Character Details</h5>
-                    <p class="card-text">Information on the current character in the order</p>
-                    <p id="detailsCharName" class="card-text"><strong>No Character</strong></p>
-                    <p id="isNPC" class="card-text">(NPC)</p>
-                    <p id="detailsCharDexMod" class="card-text"><strong>DEX: </strong>none</p>
-                    <p id="detailsCharDesc" class="card-text"><strong>Notes: </strong>none</p>
+                <div class="card-body container">
+                    <div class="card-text row">
+                        <div class="card-text col">
+                            <h5 class="card-title">Character Details</h5>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="card-text row">
+                        <div class="card-text col">
+                            <p id="detailsCharName" class="card-text"><strong>None</strong></p>
+                        </div>
+                        <div class="card-text col">
+                            <p id="isNPC" class="card-text">(NPC)</p>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="card-text row">
+                        <div class="card-text col">
+                            <p id="detailsCharDesc" class="card-text"><strong>Notes: </strong>none</p>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="card-text row">
+                        <div class="card-text col">
+                            <button id="lookupBtn" type="button" class="btn btn-info .btn_sm inline" onclick="lookupCurrent()">Lookup (Opens new page)</button>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
+
+            <!-- Initiative listing -->
+
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Initiative Order</h5>

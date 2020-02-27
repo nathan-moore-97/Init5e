@@ -1,5 +1,5 @@
 
-// TEMP all of the characters in this combat
+// ------------------------------------------------TEMP all of the characters in this combat------------------------------------------------
 
 characters = [
     {   
@@ -8,7 +8,9 @@ characters = [
         dexMod: 2, 
         hasAdv: false, 
         pc: true, 
-        desc: "Human Warlock, servant of Dendar the Night Serpent. His Eldritch Blast has the effect of constricting and crushing the life out of his prey. Matthias's left eye was changed during the transformation after abandoning the contract with Mal, and now appears to be the eye of a great snake."
+        desc: "Human Warlock, servant of Dendar the Night Serpent. His Eldritch Blast has the effect"+
+        " of constricting and crushing the life out of his prey. Matthias's left eye was changed during "+
+        "the transformation after abandoning the contract with Mal, and now appears to be the eye of a great snake."
     }, 
     {
         job: "new_char", 
@@ -16,7 +18,11 @@ characters = [
         dexMod: 2, 
         hasAdv: false, 
         pc: true, 
-        desc: "Yuan-Ti Wild Magic Sorcerer. She joined the party following the Death of Omaha and has more or less attached herself like a parasite to the party, waiting for a good time to make her intentions known.<br><br>Her brother, Orchidius, grew up with her in Omu under the baleful gaze of the sorcerer Ras Nsi, which has lead her to being mistrustful of most other creatures in Chult, especially the party of adventurers with whom she now travels. <br><br>Her brother, Orchidius, grew up with her in Omu under the baleful gaze of the sorcerer Ras Nsi, which has lead her to being mistrustful of most other creatures in Chult, especially the party of adventurers with whom she now travels."
+        desc: "Yuan-Ti Wild Magic Sorcerer. She joined the party following the Death of Omaha and has more "+
+        "or less attached herself like a parasite to the party, waiting for a good time to make her intentions" +
+        " known.<br><br>Her brother, Orchidius, grew up with her in Omu under the baleful gaze of the necromancer "+
+        "Ras Nsi, which has lead her to being mistrustful of most other creatures in Chult, especially the party " +
+        "of adventurers with whom she now travels. <br><br>She wishes to travel to the grave of her late brother."
     },
     {
         job: "new_char", 
@@ -90,8 +96,10 @@ var artus = {
     dexMod: 3,
     hasAdv: true,
     pc: false, 
-    desc: "Artus Climber, Lawful Good. Friend to Dragonbait and Bane of Ras Nsi. Weilds a longsword and the magical Ring of Winter."
+    desc: "Artus Climber, Lawful Good. Friend to Dragonbait and Bane of Ras Nsi. Wields a longsword and the legendary Ring of Winter."
 }
+
+// ----------------------------------------------------- Frontend Util functions ----------------------------------------------------- 
 
 // This function populates the "Currently" and "Up Next" fields on the jumbotron
 // It also takes the response from the next request and places the information into 
@@ -100,21 +108,52 @@ function upNext() {
     $.post("/initiative", {job: "next"}, function(res) {
         $("#currentCharacter").text(res.name);
         $("#detailsCharName").html("<strong>Name: </strong>" + res.name);
-        $("#detailsCharDexMod").html("<strong>Dex: </strong>" + res.dex);
         $("#detailsCharDesc").html("<strong>Notes: </strong>" + res.desc);
-
+        console.log(res);
         if(!res.pc) {
-            $("#isNPC").style("display: none");
+            $("#isNPC").css("display", "block");
+            $("#lookupBtn").css("display", "block");
         } else {
-            $("#isNPC").style("display: block");
+            $("#isNPC").css("display", "none");
+            $("#lookupBtn").css("display", "none");
         }
-
     });
 
     $.post("/initiative", {job: "peek"}, function(res) {
         $("#nextCharacter").text(res.name);
     });
 }
+
+
+function lookupCurrent() {
+    gotoMonster($("#currentCharacter").text());
+}
+
+// Attempts to navigate the page to a monster sheet, that appears to be fairly complete. 
+// This is one hell of a bodge but its the best thing I got without doing a shit ton of homework. 
+function gotoMonster(meanie) {
+    var urlBase = "https://jsigvard.com/dnd/monster.php?m=";
+    window.open(urlBase + meanie, "_blank");
+}
+
+function prepareInitiativeList() {
+    // populate the initiative list
+    $.get("/initiative", function(res) {
+        $("#orderListGroup").empty();
+
+        res.forEach(function(elem) {
+            console.log(elem);
+            $("#orderListGroup").append("<li class=\"list-group-item\">(" + elem.init + ") <strong> " + elem.name + "</strong></li>");        
+        });
+    });
+}
+
+function remove(character) {
+    console.log("Removing: " + character);
+    
+}
+
+// ------------------------------------------------------------- SETUP -----------------------------------------------------------------
 
 console.log("Welcome to the Init5e Tracker!");
 
@@ -126,10 +165,5 @@ characters.forEach(element => {
     $.post( "/initiative", element, function(res) {}); // TODO Error Checking?
 });
 
-// populate the initiative list
-$.get("/initiative", function(res) {
-    $("#orderListGroup").empty();
-    res.forEach(function(elem) {
-        $("#orderListGroup").append("<li class=\"list-group-item\">(" + elem.init + ") <strong>" + elem.name + "</strong></li>");
-    });
-});
+
+prepareInitiativeList();

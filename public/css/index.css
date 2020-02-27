@@ -7,12 +7,13 @@
     margin-right: 7%;
 }
 
-#isNPC {
+#isNPC, #lookupBtn {
     display: none;
 }
 
+
 .card {
-    max-height: 400px;
+    max-height: 450px;
     margin-bottom: 10px;
     overflow:scroll;
     -webkit-overflow-scrolling: touch;

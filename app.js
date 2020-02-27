@@ -5,7 +5,7 @@ var app = express();
 var ip = 'localhost';
 var port = 6807;
 
-var init = require('./initiative');
+var init = require('./Initiative');
 
 // serve local public files
 app.use(express.static(__dirname + '/public'));
@@ -52,4 +52,4 @@ app.post('/initiative', function(req, res) {
 });
 
 app.listen(port, ip);
-console.log("App started on port: " + port);
+console.log("Started on port: " + port);

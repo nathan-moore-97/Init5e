@@ -14,8 +14,9 @@ exports.Character = function(obj) {
     return {
         name : obj.charName,
         dex  : parseInt(obj.dexMod),
-        adv  : obj.hasAdv,
+        adv  : obj.hasAdv === 'true',
         desc : obj.desc,
+        pc   : obj.pc === 'true',
         init : null
     }
 }
