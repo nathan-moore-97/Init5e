@@ -13,7 +13,9 @@ client.once('ready', function() {
     console.log("Discord client: " + client.user.username);
 });
 
-client.login('NjA3NTczNDcwMDAzMzMxMDky.XUblfQ.XH7UCj98gDu_x5-hNH7JEuOb9g4');
+exports.login = function(token) {
+    client.login(token);
+}
 
 exports.attach = function(i) {
     console.log('Attaching initiative process to discord');
