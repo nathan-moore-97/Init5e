@@ -1,4 +1,3 @@
-var env = require('dotenv').config();
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
@@ -97,7 +96,6 @@ app.post('/initiative', function(req, res) {
     }
 });
 
-bot.login(process.env.DISCORD_TOKEN);
 bot.attach(init);
 app.listen(port, ip);
 
