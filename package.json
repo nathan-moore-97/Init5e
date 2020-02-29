@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "discord": "^0.8.2",
+    "discord.js": "^11.5.1",
     "express": "^4.17.1",
     "path": "^0.12.7"
   }

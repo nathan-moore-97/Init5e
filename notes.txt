@@ -1,0 +1,4 @@
+Client ID: 607573470003331092
+Bot Token: NjA3NTczNDcwMDAzMzMxMDky.XUblfQ.XH7UCj98gDu_x5-hNH7JEuOb9g4
+https://discordapp.com/oauth2/authorize?client_id=607573470003331092&scope=bot
+

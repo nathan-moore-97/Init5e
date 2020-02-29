@@ -55,38 +55,6 @@ characters = [
         hasAdv: false, 
         pc: false, 
         desc: "Will ambush from the cielling and savage the enemy"
-    },
-    {
-        job: "new_char", 
-        charName: "Firenewt Warrior", 
-        dexMod: 1, 
-        hasAdv: false, 
-        pc: false, 
-        desc: "Large, two handed scimitar"
-    },
-    {
-        job: "new_char", 
-        charName: "Firenewt Warrior", 
-        dexMod: 1, 
-        hasAdv: false, 
-        pc: false, 
-        desc: "Shield and scimitar with a hand crossbow"
-    },
-    {
-        job: "new_char", 
-        charName: "Salamander", 
-        dexMod: 2, 
-        hasAdv: false, 
-        pc: false, 
-        desc: ""
-    }, 
-    {
-        job: "new_char", 
-        charName: "Artimis", 
-        dexMod: 4, 
-        hasAdv: true, 
-        pc: true, 
-        desc: "Human Ranger. Aritmis likes to shoot things."
     }
 ]
 
@@ -150,7 +118,12 @@ function prepareInitiativeList() {
 
 function remove(character) {
     console.log("Removing: " + character);
-    
+}
+
+const prepCharacterAndSend = eventObj => {
+    eventObj.preventDefault();
+    console.log("Yeet");
+    $('#addCharacterForm').trigger('reset');
 }
 
 // ------------------------------------------------------------- SETUP -----------------------------------------------------------------
@@ -160,10 +133,11 @@ console.log("Welcome to the Init5e Tracker!");
 $.post("/initiative", {job: "clear"}, function(res) {}); // TODO Error Checking?
 
 // TEMP
+/*
 characters.forEach(element => {
     element.job = "new_char";
     $.post( "/initiative", element, function(res) {}); // TODO Error Checking?
 });
 
-
+*/
 prepareInitiativeList();

@@ -6,6 +6,43 @@ var ip = 'localhost';
 var port = 6807;
 
 var init = require('./Initiative');
+var bot = require('./bot.js');
+
+characters = [
+    {
+        job: "new_char", 
+        charName: "Firenewt Warrior", 
+        dexMod: 1, 
+        hasAdv: false, 
+        pc: false, 
+        desc: "Large, two handed scimitar"
+    },
+    {
+        job: "new_char", 
+        charName: "Firenewt Warrior", 
+        dexMod: 1, 
+        hasAdv: false, 
+        pc: false, 
+        desc: "Shield and scimitar with a hand crossbow"
+    },
+    {
+        job: "new_char", 
+        charName: "Salamander", 
+        dexMod: 2, 
+        hasAdv: false, 
+        pc: false, 
+        desc: ""
+    }, 
+    {
+        job: "new_char", 
+        charName: "Artimis", 
+        dexMod: 4, 
+        hasAdv: true, 
+        pc: true, 
+        desc: "Human Ranger. Aritmis likes to shoot things."
+    }
+]
+
 
 // serve local public files
 app.use(express.static(__dirname + '/public'));
@@ -23,6 +60,14 @@ app.get('/initiative', function(req, res){
     res.end();
 });
 
+app.get('/bot', function(req, res){
+    res.send("Adding bots characters...");
+    characters.forEach(element => {
+        bot.addCharacter(element);
+    });
+    res.end();
+});
+
 app.post('/initiative', function(req, res) {
     switch (req.body.job) {
         case "new_char":
@@ -33,7 +78,7 @@ app.post('/initiative', function(req, res) {
         case "next":
             res.send(init.next());
             res.end();
-            break
+            break;
         case "peek":
             res.send(init.peek());
             res.end();
@@ -51,5 +96,6 @@ app.post('/initiative', function(req, res) {
     }
 });
 
+bot.attach(init);
 app.listen(port, ip);
 console.log("Started on port: " + port);

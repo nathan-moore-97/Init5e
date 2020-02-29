@@ -43,7 +43,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Add Character to Initiative</h5>
                     <p class="card-text">Use this form to add a new character to the Initiative Order</p>
-                    <form>
+                    <form id="addCharacterForm" onsubmit="prepCharacterAndSend(event)">
                         <div class="form-group">
                             <label for="characterNameField">Name / Monster</label>
                             <input type="text" class="form-control" id="characterNameField" placeholder="Enter the character/monster name">
