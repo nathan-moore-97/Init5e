@@ -64,5 +64,4 @@ exports.order = function() {
 
         return (a.init < b.init) ? 1 : -1;
     });
-
 }
