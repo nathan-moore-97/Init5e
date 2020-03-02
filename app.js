@@ -8,7 +8,8 @@ var ip = process.env.IP;
 var port = process.env.PORT;
 
 var init = require('./Initiative');
-var bot = require('./bot.js');
+var bot = require('./bot');
+
 
 
 // serve local public files
