@@ -1,47 +1,14 @@
 var express = require('express');
+var env = require('dotenv').config();
 var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
-var ip = 'localhost';
-var port = 6807;
+
+var ip = process.env.IP;
+var port = process.env.PORT;
 
 var init = require('./Initiative');
 var bot = require('./bot.js');
-
-characters = [
-    {
-        job: "new_char", 
-        charName: "Firenewt Warrior", 
-        dexMod: 1, 
-        hasAdv: false, 
-        pc: false, 
-        desc: "Large, two handed scimitar"
-    },
-    {
-        job: "new_char", 
-        charName: "Firenewt Warrior", 
-        dexMod: 1, 
-        hasAdv: false, 
-        pc: false, 
-        desc: "Shield and scimitar with a hand crossbow"
-    },
-    {
-        job: "new_char", 
-        charName: "Salamander", 
-        dexMod: 2, 
-        hasAdv: false, 
-        pc: false, 
-        desc: ""
-    }, 
-    {
-        job: "new_char", 
-        charName: "Artimis", 
-        dexMod: 4, 
-        hasAdv: true, 
-        pc: true, 
-        desc: "Human Ranger. Aritmis likes to shoot things."
-    }
-]
 
 
 // serve local public files
@@ -57,14 +24,6 @@ app.get('/', function(req, res) {
 
 app.get('/initiative', function(req, res){
     res.send(init.getOrder());
-    res.end();
-});
-
-app.get('/bot', function(req, res){
-    res.send("Adding bots characters...");
-    characters.forEach(element => {
-        bot.addCharacter(element);
-    });
     res.end();
 });
 

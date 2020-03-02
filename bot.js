@@ -34,7 +34,7 @@ fs.readdir("./media", function (err, files) {
         // Do whatever you want to do with the file
         images.push(file);
     });
-    // creates a copy
+    // creates a copy, that we will remove from whenever the bot posts a tip image
     temp = images.slice();
 });
 
@@ -63,11 +63,14 @@ client.on('message', function(msg) {
                 }
                 console.log(temp.length + " remaining...");
                 break;
-            case 'next':
-                msg.reply('Nathan is lazy and hasnt written the next command yet.');
+            case 'peek':
+                msg.channel.send(`${init.peek().name} is next in the order!`);
                 break;
             case 'prefix':
                 msg.reply(`My prefix is: ${prefix}. You will be able to use that command to change it soon.`);
+                break;
+            case 'weather':
+                msg.reply('Do I look like dopplar radar to you bitch');
                 break;
             default:
                 msg.reply(`Unrecognized command: ${command}. I would help, but Nathan hasn't written that function yet.`);
