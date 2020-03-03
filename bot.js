@@ -5,7 +5,7 @@ const env = require('dotenv').config();
 const discord = require('discord.js');
 // Local modules
 var init = require('./Initiative');
-var tomb = require('./Tomb');
+
 
 const client = new discord.Client();
 var exports = module.exports = {};
@@ -71,8 +71,11 @@ client.on('message', function(msg) {
                 msg.reply(`My prefix is: ${prefix}. You will be able to use that command to change it soon.`);
                 break;
             case 'weather':
-                var weather = tomb.rollWeather();
+                var weather = init.getWeather(msg.content.split(' ')[1] === 'roll');
                 msg.reply(`Temperature is ${weather.temp} degrees Farenheit with ${weather.wind}, and ${weather.precipitation}.`);
+                break;
+            case 'madness':
+                msg.author.send("Ho ho ho, you're as mad as a hatter!!");
                 break;
             default:
                 msg.reply(`Unrecognized command: ${command}. I would help, but Nathan hasn't written that function yet.`);

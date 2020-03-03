@@ -1,5 +1,9 @@
 
 var cm = require('./CharacterUtils');
+
+// TODO: Very temp. remove as soon as possible
+var tomb = require('./TombOfAnnihilation');
+
 var exports = module.exports = {};
 
 const chars = []; // list of characters in this initiative
@@ -64,4 +68,8 @@ exports.order = function() {
 
         return (a.init < b.init) ? 1 : -1;
     });
+}
+
+exports.getWeather = function(roll) {
+    return tomb.weather(roll);
 }
