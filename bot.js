@@ -4,7 +4,7 @@ const env = require('dotenv').config();
 // Discord modules
 const discord = require('discord.js');
 // Local modules
-var init = require('./Initiative');
+var init = require('./lib/Initiative');
 
 
 const client = new discord.Client();
@@ -25,7 +25,7 @@ client.once('ready', function() {
 });
 
 // read in the image files
-fs.readdir("./media", function (err, files) {
+fs.readdir("./media/tips", function (err, files) {
     //handling error
     if (err) {
         return console.log('Unable to scan directory: ' + err);
@@ -55,7 +55,7 @@ client.on('message', function(msg) {
                 // grab a random index from the list of files
                 var index = between(0, temp.length);
                 // send the image
-                msg.channel.send("~ Tip from the Friendly DM ~", {files: ["./media/" + temp[index]]});
+                msg.channel.send("~ Tip from the Friendly DM ~", {files: ["./media/tips/" + temp[index]]});
                 // removes that element
                 temp.splice(temp, 1);
                 // if we have sent all of the tips, refill
@@ -65,7 +65,12 @@ client.on('message', function(msg) {
                 console.log(temp.length + " remaining...");
                 break;
             case 'peek':
-                msg.channel.send(`${init.peek().name} is next in the order!`);
+                var next = init.peek();
+                if (next === undefined) {
+                    msg.channel.send('Oops! Looks like initiative is empty...');
+                } else {
+                    msg.channel.send(`${init.peek().name} is next in the order!`);
+                }
                 break;
             case 'prefix':
                 msg.reply(`My prefix is: ${prefix}. You will be able to use that command to change it soon.`);
