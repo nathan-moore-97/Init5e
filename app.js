@@ -5,7 +5,7 @@ var path = require('path');
 var app = express();
 
 var ip = process.env.IP;
-var port = process.env.PORT;
+var port = process.env.WEB_PORT;
 
 var init = require('./lib/Initiative');
 var bot = require('./bot');

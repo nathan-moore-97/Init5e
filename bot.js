@@ -3,6 +3,7 @@ const fs = require('fs');
 const env = require('dotenv').config();
 // Discord modules
 const discord = require('discord.js');
+const ytdl = require('ytdl-core');
 // Local modules
 var init = require('./lib/Initiative');
 
@@ -16,6 +17,7 @@ var exports = module.exports = {};
 const images = []
 var temp = [];
 var prefix = '!';
+const queue = new Map(); // Music functionality
 
 client.login(process.env.DISCORD_TOKEN);
 
@@ -43,8 +45,10 @@ fs.readdir("./media/tips", function (err, files) {
 
 // recieve messages
 client.on('message', function(msg) {
+    const serverQueue = queue.get(msg.guild.id);
     // check to see if the message is targeting the bot
     if (msg.content.startsWith(prefix)) {
+       
         // parse the command
         var command = msg.content.split(' ')[0].slice(1);
         switch (command) {
@@ -78,6 +82,10 @@ client.on('message', function(msg) {
             case 'weather':
                 var weather = init.getWeather(msg.content.split(' ')[1] === 'roll');
                 msg.reply(`Temperature is ${weather.temp} degrees Farenheit with ${weather.wind}, and ${weather.precipitation}.`);
+                ambience(weather.ambience, msg);
+                break;
+            case 'leave':
+                msg.member.voiceChannel.leave();
                 break;
             case 'madness':
                 msg.author.send("Ho ho ho, you're as mad as a hatter!!");
@@ -108,4 +116,32 @@ exports.addCharacter = function(char) {
  */
 function between(min, max) {  
     return Math.floor(Math.random() * (max - min) + min);
+}
+
+// ---------------------------------------------------- Music ----------------------------------------------------
+
+async function ambience(query, msg) {
+    const voiceChannel = msg.member.voiceChannel;
+    const songInfo = await ytdl.getInfo(query);
+    const song = {
+        title: songInfo.title,
+        url: songInfo.video_url,
+    };
+    console.info(`AMBIENCE\t${song.title}`);
+    var connection = await voiceChannel.join();
+    play(connection, song);
+}
+
+function play(connection, song) {
+
+	if (!song) {
+		connection.voiceChannel.leave();
+		return;
+	}
+
+	const dispatcher = connection.playStream(ytdl(song.url))
+		.on('error', error => {
+			console.error(error);
+		});
+	dispatcher.setVolumeLogarithmic(1);
 }
