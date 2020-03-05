@@ -45,7 +45,6 @@ fs.readdir("./media/tips", function (err, files) {
 
 // recieve messages
 client.on('message', function(msg) {
-    const serverQueue = queue.get(msg.guild.id);
     // check to see if the message is targeting the bot
     if (msg.content.startsWith(prefix)) {
        
