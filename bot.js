@@ -8,6 +8,7 @@ const ytdl = require('ytdl-core');
 var init = require('./lib/Initiative');
 
 
+
 const client = new discord.Client();
 var exports = module.exports = {};
 
@@ -79,15 +80,23 @@ client.on('message', function(msg) {
                 msg.reply(`My prefix is: ${prefix}. You will be able to use that command to change it soon.`);
                 break;
             case 'weather':
-                var weather = init.getWeather(msg.content.split(' ')[1] === 'roll');
+                var weather = init.getWeather(msg.content.includes('roll'));
                 msg.reply(`Temperature is ${weather.temp} degrees Farenheit with ${weather.wind}, and ${weather.precipitation}.`);
-                ambience(weather.ambience, msg);
+                if(msg.content.includes('ambience')) {
+                    ambience(weather.ambience, msg);
+                }
                 break;
             case 'leave':
                 msg.member.voiceChannel.leave();
                 break;
             case 'madness':
-                msg.author.send("Ho ho ho, you're as mad as a hatter!!");
+                if(msg.content.split(' ')[1] === 'long') {
+                    msg.author.send(init.rollLongTermMadness());
+                } else if (msg.content.split(' ')[1] === 'short') {
+                    msg.author.send(init.rollShortTermMadness());
+                } else {
+                    msg.reply(`Specify short or long term with '${prefix}madness short' or '${prefix}madness long'`);
+                }
                 break;
             default:
                 msg.reply(`Unrecognized command: ${command}. I would help, but Nathan hasn't written that function yet.`);
