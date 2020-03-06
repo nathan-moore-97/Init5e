@@ -1,0 +1,39 @@
+{
+    "characters" : [
+        {   
+            "charName": "Matthias Jhinn", 
+            "dexMod": 2, 
+            "hasAdv": false, 
+            "pc": true, 
+            "desc": "Human Warlock, servant of Dendar the Night Serpent. His Eldritch Blast has the effect of constricting and crushing the life out of his prey. Matthias's left eye was changed during the transformation after abandoning the contract with Mal, and now appears to be the eye of a great snake."
+        }, 
+        {
+            "charName": "Rosá", 
+            "dexMod": 2, 
+            "hasAdv": false, 
+            "pc": true, 
+            "desc": "Yuan-Ti Wild Magic Sorcerer. She joined the party following the Death of Omaha and has more or less attached herself like a parasite to the party, waiting for a good time to make her intentions known.<br><br>Her brother, Orchidius, grew up with her in Omu under the baleful gaze of the necromancer Ras Nsi, which has lead her to being mistrustful of most other creatures in Chult, especially the party of adventurers with whom she now travels. <br><br>She wishes to travel to the grave of her late brother."
+        },
+        {
+            "charName": "Norban", 
+            "dexMod": -2, 
+            "hasAdv": false, 
+            "pc": true, 
+            "desc": "Barbarian. Norban like to hit things a lot."
+        },
+        {
+            "charName": "Eli", 
+            "dexMod": 3, 
+            "hasAdv": true, 
+            "pc": true, 
+            "desc": "Human School of Swords Bard. Lost his hand in an accident and found a magical prostethic "
+        },
+        {
+            "charName": "Artimis", 
+            "dexMod": 4, 
+            "hasAdv": true, 
+            "pc": true, 
+            "desc": "Human Ranger. Aritmis likes to shoot things."
+        }
+    ]
+}
