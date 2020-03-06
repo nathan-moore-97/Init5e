@@ -4,11 +4,57 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
 
-var ip = process.env.IP;
-var port = process.env.WEB_PORT;
+var WebSocketClient = require('websocket').client;
+var client = new WebSocketClient();
 
-var init = require('./lib/Initiative');
-var bot = require('./bot');
+var ip = process.env.IP;
+var web_port = process.env.WEB_PORT;
+var init_local = null;
+
+const connection = null;
+
+// ------------------------------ Server side network ----------------------------
+
+// Function expects a JSON object that it will send over the wire
+// as UTF data
+function send(payload) {
+    if (connection.connected) {
+        connection.sendUTF(JSON.stringify(payload));
+        setTimeout(sendNumber, 1000);
+    }
+}
+
+// Attempt to connect to the dnd5e service
+client.on('connectFailed', function(error) {
+    console.error('Connect Error: ' + error.toString());
+    console.log('Building local initiative....');
+    init_local = require('./lib/Initiative');
+});
+
+client.on('connect', function(conn) {
+    console.log('WebSocket Client Connected');
+
+    connection.on('error', function(error) {
+        console.log("Connection Error: " + error.toString());
+    });
+
+    connection.on('close', function() {
+        console.log(`${process.env.PROTOCOL} Connection Closed`);
+    });
+
+
+    connection.on('message', function(message) {
+        if (message.type === 'utf8') {
+            // console.log("Received: '" + message.utf8Data + "'");
+            console.log(JSON.decode(message.utf8Data));
+        }
+    });
+
+});
+
+client.connect(`ws://${process.env.IP}:${process.env.SERV_PORT}/`, `${process.env.PROTOCOL}`);
+
+// ----------------------------------- HTTP server -------------------------------
 
 
 
@@ -56,7 +102,5 @@ app.post('/initiative', function(req, res) {
     }
 });
 
-bot.attach(init);
-app.listen(port, ip);
-
-console.log("Started on port: " + port);
+app.listen(web_port, ip);
+console.log("Started on port: " + web_port);
