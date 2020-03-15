@@ -1,102 +1,38 @@
 
 // ------------------------------------------------TEMP all of the characters in this combat------------------------------------------------
+const characters = []
 
-characters = [
-    {   
-        job: "new_char", 
-        charName: "Matthias", 
-        dexMod: 2, 
-        hasAdv: false, 
-        pc: true, 
-        desc: "Human Warlock, servant of Dendar the Night Serpent. His Eldritch Blast has the effect"+
-        " of constricting and crushing the life out of his prey. Matthias's left eye was changed during "+
-        "the transformation after abandoning the contract with Mal, and now appears to be the eye of a great snake."
-    }, 
-    {
-        job: "new_char", 
-        charName: "Rosá", 
-        dexMod: 2, 
-        hasAdv: false, 
-        pc: true, 
-        desc: "Yuan-Ti Wild Magic Sorcerer. She joined the party following the Death of Omaha and has more "+
-        "or less attached herself like a parasite to the party, waiting for a good time to make her intentions" +
-        " known.<br><br>Her brother, Orchidius, grew up with her in Omu under the baleful gaze of the necromancer "+
-        "Ras Nsi, which has lead her to being mistrustful of most other creatures in Chult, especially the party " +
-        "of adventurers with whom she now travels. <br><br>She wishes to travel to the grave of her late brother."
-    },
-    {
-        job: "new_char", 
-        charName: "Norban", 
-        dexMod: -2, 
-        hasAdv: false, 
-        pc: true, 
-        desc: "Barbarian. Norban like to hit things a lot."
-    },
-    {
-        job: "new_char", 
-        charName: "Eli", 
-        dexMod: 3, 
-        hasAdv: true, 
-        pc: true, 
-        desc: "Human School of Swords Bard. Lost his hand in an accident and found a magical prostethic "
-    },
-    {
-        job: "new_char", 
-        charName: "Firenewt Warrior", 
-        dexMod: 1, 
-        hasAdv: false, 
-        pc: false, 
-        desc: "Shield and a scimitar"
-    },
-    {
-        job: "new_char", 
-        charName: "Firenewt Warrior", 
-        dexMod: 1, 
-        hasAdv: false, 
-        pc: false, 
-        desc: "Will ambush from the cielling and savage the enemy"
-    },
-    {
-        job: "new_char", 
-        charName: "Firenewt Warrior", 
-        dexMod: 1, 
-        hasAdv: false, 
-        pc: false, 
-        desc: "Large, two handed scimitar"
-    },
-    {
-        job: "new_char", 
-        charName: "Firenewt Warrior", 
-        dexMod: 1, 
-        hasAdv: false, 
-        pc: false, 
-        desc: "Shield and scimitar with a hand crossbow"
-    },
-    {
-        job: "new_char", 
-        charName: "Salamander", 
-        dexMod: 2, 
-        hasAdv: false, 
-        pc: false, 
-        desc: ""
-    }, 
-    {
-        job: "new_char", 
-        charName: "Artimis", 
-        dexMod: 4, 
-        hasAdv: true, 
-        pc: true, 
-        desc: "Human Ranger. Aritmis likes to shoot things."
-    }
-]
+// bad bad jank.
+function addFromFile(file) {
+    $.post('/characters', {which: file}, function(res) {
+        res.characters.forEach(element => {
+            element.job = "new_char";
+            $.post( "/initiative", element, function(res) {
+                console.log(res);
+            }); // TODO Error Checking?
+        });
+    }).then(function() {
+        prepareInitiativeList();
+    });
+}
 
-var artus = {
-    job: "new_char", 
-    charName: "Artus Climber", 
-    dexMod: 3,
-    hasAdv: true,
-    pc: false, 
-    desc: "Artus Climber, Lawful Good. Friend to Dragonbait and Bane of Ras Nsi. Wields a longsword and the legendary Ring of Winter."
+function clear() {
+    $.post("/initiative", {job: "clear"}, function(res) {}).then(function() {
+        location.reload();
+    });    
+}
+
+// HORRIBLE JANK
+function dragonFight() {
+    clear(); 
+    addFromFile("players.json");
+    addFromFile("tzindelor.json");
+}
+// HORRIBLE JANK
+function salamanderFight() {
+    clear(); 
+    addFromFile("players.json");
+    addFromFile("salamander_fight.json");
 }
 
 // ----------------------------------------------------- Frontend Util functions ----------------------------------------------------- 
@@ -143,13 +79,23 @@ function prepareInitiativeList() {
 
         res.forEach(function(elem) {
             console.log(elem);
-            $("#orderListGroup").append("<li class=\"list-group-item\">(" + elem.init + ") <strong> " + elem.name + "</strong></li>");        
+            $("#orderListGroup").append(
+                `<li class=\"list-group-item\">
+                    <strong id="btnRemoveCharById" onclick="remove(${elem.id})">X</strong> 
+                    (${elem.init}) 
+                    <strong>${elem.name}</strong>
+                </li>`
+            );        
         });
     });
 }
 
 function remove(character) {
     console.log("Removing: " + character);
+    $.post('/initiative', {job: "pop", which: character}, function(res) {
+        console.log(res);
+    });
+    prepareInitiativeList();
 }
 
 const prepCharacterAndSend = eventObj => {
@@ -161,15 +107,4 @@ const prepCharacterAndSend = eventObj => {
 // ------------------------------------------------------------- SETUP -----------------------------------------------------------------
 
 console.log("Welcome to the Init5e Tracker!");
-
-$.post("/initiative", {job: "clear"}, function(res) {}); // TODO Error Checking?
-
-// TEMP
-
-characters.forEach(element => {
-    element.job = "new_char";
-    $.post( "/initiative", element, function(res) {}); // TODO Error Checking?
-});
-$.get()
-
 prepareInitiativeList();

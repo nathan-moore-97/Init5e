@@ -7,6 +7,14 @@
     margin-right: 7%;
 }
 
+#btnRemoveCharById {
+    cursor: pointer;
+}
+
+#btnRemoveCharById:hover {
+    color: red;
+}
+
 #isNPC, #lookupBtn {
     display: none;
 }

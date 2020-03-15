@@ -10,4 +10,16 @@
     @author Nathan Moore
 */
 
-var io = require('socket.io').listen(process.env.SERV_PORT);
+var dice = require('./lib/Dice');
+var tomb = require('./lib/TombOfAnnihilation');
+var madness = require('./lib/Madness');
+var init = require('./lib/Initiative');
+var wild = require('./lib/WildMagic')
+
+var exports = module.exports = {};
+
+exports.Dice = dice;
+exports.ToA = tomb;
+exports.Madness = madness;
+exports.Initiative = init;
+exports.WildMagic = wild;

@@ -5,7 +5,7 @@ const env = require('dotenv').config();
 const discord = require('discord.js');
 const ytdl = require('ytdl-core');
 // Local modules
-var init = require('./lib/Initiative');
+var fifthEd = require('./dnd5e');
 
 
 
@@ -91,13 +91,30 @@ client.on('message', function(msg) {
                 break;
             case 'madness':
                 if(msg.content.split(' ')[1] === 'long') {
-                    msg.author.send(init.rollLongTermMadness());
+                    msg.author.send(`Longterm madness: ${fifthEd.Madness.longTerm()}`);
                 } else if (msg.content.split(' ')[1] === 'short') {
-                    msg.author.send(init.rollShortTermMadness());
+                    msg.author.send(`Short term madness: ${fifthEd.Madness.shortTerm()}`);
+                } else if (msg.content.split(' ')[1] === 'indefinite') {
+                    msg.author.send(`Indefinite madness: ${fifthEd.Madness.indefinite()}`);
                 } else {
-                    msg.reply(`Specify short or long term with '${prefix}madness short' or '${prefix}madness long'`);
+                    msg.reply(`Specify short or long term with '${prefix}madness [short, long, or indefinite]'`);
                 }
                 break;
+            case 'roll':
+                var roll = msg.content.toLowerCase().split(' ')[1].split('d');
+                var s = parseInt(roll[1]);
+                var n = isNaN(parseInt(roll[0])) ? 1 : parseInt(roll[0]);
+                if (isNaN(s)) {
+                    msg.reply(`Please enter a valid number for your roll`);
+                    break;
+                }
+                msg.reply(`${fifthEd.Dice.nd(n, s)}`);
+                break
+            case 'wildmagic':
+                msg.author.send(`Wild Magic Surge: ${fifthEd.WildMagic.surge()}`);
+                break;
+            case 'die':
+                process.exit();
             default:
                 msg.reply(`Unrecognized command: ${command}. I would help, but Nathan hasn't written that function yet.`);
                 break;
@@ -151,5 +168,5 @@ function play(connection, song) {
 		.on('error', error => {
 			console.error(error);
 		});
-	dispatcher.setVolumeLogarithmic(1);
+	dispatcher.setVolumeLogarithmic(.5);
 }

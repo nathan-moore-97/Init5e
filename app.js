@@ -2,6 +2,7 @@ var express = require('express');
 var env = require('dotenv').config();
 var bodyParser = require('body-parser');
 var path = require('path');
+var fs = require('fs');
 var app = express();
 
 var ip = process.env.IP;
@@ -28,6 +29,13 @@ app.get('/initiative', function(req, res){
     res.end();
 });
 
+app.post('/characters', function(req, res) {
+    fs.readFile(`encounters/${req.body.which}`, 'utf8', function (err, data) {
+        if (err) throw err;
+        res.send(JSON.parse(data));
+    });
+});
+
 app.post('/initiative', function(req, res) {
     switch (req.body.job) {
         case "new_char":
@@ -44,7 +52,7 @@ app.post('/initiative', function(req, res) {
             res.end();
             break;
         case "pop":
-            var rip = init.remove(req.body.which);
+            var rip = init.remove(parseInt(req.body.which));
             res.send(rip);
             res.end();
             break;
