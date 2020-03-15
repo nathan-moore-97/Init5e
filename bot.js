@@ -7,8 +7,6 @@ const ytdl = require('ytdl-core');
 // Local modules
 var fifthEd = require('./dnd5e');
 
-
-
 const client = new discord.Client();
 var exports = module.exports = {};
 
@@ -42,8 +40,6 @@ fs.readdir("./media/tips", function (err, files) {
     temp = images.slice();
 });
 
-
-
 // recieve messages
 client.on('message', function(msg) {
     // check to see if the message is targeting the bot
@@ -73,7 +69,13 @@ client.on('message', function(msg) {
                 if (next === undefined) {
                     msg.channel.send('Oops! Looks like initiative is empty...');
                 } else {
-                    msg.channel.send(`${init.peek().name} is next in the order!`);
+                    var peek = init.peek();
+                    msg.channel.send(new discord.RichEmbed()
+                        .setTitle(`~ Initiative Order ~`)
+                        .addField(`**Up now:**`, `${peek[0].name}`)
+                        .addField(`**Up next:**`, `${peek[1].name}`)
+                        .addField(`**On deck:**`, `${peek[2].name}`)
+                    );
                 }
                 break;
             case 'prefix':

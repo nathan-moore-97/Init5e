@@ -7,9 +7,7 @@ function addFromFile(file) {
     $.post('/characters', {which: file}, function(res) {
         res.characters.forEach(element => {
             element.job = "new_char";
-            $.post( "/initiative", element, function(res) {
-                console.log(res);
-            }); // TODO Error Checking?
+            $.post( "/initiative", element, function(res) { }); // TODO Error Checking?
         });
     }).then(function() {
         prepareInitiativeList();
@@ -45,7 +43,6 @@ function upNext() {
         $("#currentCharacter").text(res.name);
         $("#detailsCharName").html("<strong>Name: </strong>" + res.name);
         $("#detailsCharDesc").html("<strong>Notes: </strong>" + res.desc);
-        console.log(res);
         if(!res.pc) {
             $("#isNPC").css("display", "block");
             $("#lookupBtn").css("display", "block");
@@ -56,7 +53,7 @@ function upNext() {
     });
 
     $.post("/initiative", {job: "peek"}, function(res) {
-        $("#nextCharacter").text(res.name);
+        $("#nextCharacter").text(res[1].name);
     });
 }
 
@@ -96,11 +93,13 @@ function remove(character) {
         console.log(res);
     });
     prepareInitiativeList();
+    $.post("/initiative", {job: "peek"}, function(res) {
+        $("#nextCharacter").text(res[1].name);
+    });
 }
 
 const prepCharacterAndSend = eventObj => {
     eventObj.preventDefault();
-    console.log("Yeet");
     $('#addCharacterForm').trigger('reset');
 }
 
