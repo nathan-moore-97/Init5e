@@ -4,14 +4,19 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var fs = require('fs');
 var app = express();
+// socket.io, for the bot pushing updates to the frontend
+var http = require('http').createServer(app);
+var io = require('socket.io')(http)
 
 var ip = process.env.IP;
 var port = process.env.WEB_PORT;
 
-var init = require('./lib/Initiative');
+var init = require('./dnd5e').Initiative;
 var bot = require('./bot');
 
+var exports = module.exports = {};
 
+exports.init = init;
 
 // serve local public files
 app.use(express.static(__dirname + '/public'));
@@ -24,7 +29,13 @@ app.get('/', function(req, res) {
     res.sendFile('index.html');
 });
 
-app.get('/initiative', function(req, res){
+app.get('/initiative', function(req, res) {
+    res.send(init.getOrder());
+    res.end();
+});
+
+app.get('/roll', function(req, res) {
+    init.roll();
     res.send(init.getOrder());
     res.end();
 });
@@ -64,7 +75,34 @@ app.post('/initiative', function(req, res) {
     }
 });
 
+app.post("/friendly-dm", function(req, res){
+    switch(req.body.job) {
+        case 'ping':
+            console.log(req.body);
+            io.emit('ping', req.body.data);
+            res.send("init5e frontend successfully pinged");
+            res.end();
+            break;
+        default:
+            console.log(req.body)
+            break;
+    }
+});
+
+io.on('connection', function(socket) {
+    console.log('DM Connected');
+
+    socket.on('disconnect', function() {
+        console.log('DM disconnected');
+    });
+
+    socket.on('ping', function(){
+        console.log(`ping reply`);
+    });
+
+});
+
 bot.attach(init);
-app.listen(port, ip);
+http.listen(port, ip);
 
 console.log("Started on port: " + port);

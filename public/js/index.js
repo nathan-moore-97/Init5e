@@ -23,13 +23,13 @@ function clear() {
 // HORRIBLE JANK
 function dragonFight() {
     clear(); 
-    addFromFile("players.json");
+    addFromFile("toa_players.json");
     addFromFile("tzindelor.json");
 }
 // HORRIBLE JANK
 function salamanderFight() {
     clear(); 
-    addFromFile("players.json");
+    addFromFile("toa_players.json");
     addFromFile("salamander_fight.json");
 }
 
@@ -50,11 +50,19 @@ function upNext() {
             $("#isNPC").css("display", "none");
             $("#lookupBtn").css("display", "none");
         }
+
+        if (res.topOfOrder && $("#rollAtTop").prop("checked")) {
+            $.get("/roll", function(res) {});
+            prepareInitiativeList();
+        }
+        
+
     });
 
     $.post("/initiative", {job: "peek"}, function(res) {
         $("#nextCharacter").text(res[1].name);
     });
+    
 }
 
 
@@ -102,6 +110,18 @@ const prepCharacterAndSend = eventObj => {
     eventObj.preventDefault();
     $('#addCharacterForm').trigger('reset');
 }
+
+// ---------------------------------------------------------- SOCKET IO -----------------------------------------------------------------
+$(function () {
+    var socket = io();
+    socket.on('ping', function(payload){
+        if (payload != undefined) {
+            $('#stream').text(payload);
+        }
+    });
+});
+
+
 
 // ------------------------------------------------------------- SETUP -----------------------------------------------------------------
 

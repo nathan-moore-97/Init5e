@@ -1,11 +1,13 @@
 // Generic modules
 const fs = require('fs');
 const env = require('dotenv').config();
+const axios = require('axios');
 // Discord modules
 const discord = require('discord.js');
 const ytdl = require('ytdl-core');
 // Local modules
 var fifthEd = require('./dnd5e');
+var init = null;
 
 const client = new discord.Client();
 var exports = module.exports = {};
@@ -17,6 +19,7 @@ const images = []
 var temp = [];
 var prefix = '!';
 const queue = new Map(); // Music functionality
+var init5eUrl = `http://${process.env.IP}:${process.env.WEB_PORT}`
 
 client.login(process.env.DISCORD_TOKEN);
 
@@ -49,7 +52,8 @@ client.on('message', function(msg) {
         var command = msg.content.split(' ')[0].slice(1);
         switch (command) {
             case 'ping':
-                msg.reply("Pong!");
+                // Async function will deal with the reply
+                postToInit5e(msg, {job: 'ping', data: `${msg.author.username} pinged you!`});
                 break;
             case 'tip':
                 // grab a random index from the list of files
@@ -65,24 +69,29 @@ client.on('message', function(msg) {
                 console.log(temp.length + " remaining...");
                 break;
             case 'peek':
-                var next = init.peek();
-                if (next === undefined) {
+                var peek = init.peek();
+                if (peek === undefined) {
                     msg.channel.send('Oops! Looks like initiative is empty...');
                 } else {
-                    var peek = init.peek();
-                    msg.channel.send(new discord.RichEmbed()
-                        .setTitle(`~ Initiative Order ~`)
-                        .addField(`**Up now:**`, `${peek[0].name}`)
-                        .addField(`**Up next:**`, `${peek[1].name}`)
-                        .addField(`**On deck:**`, `${peek[2].name}`)
-                    );
+                    var embed = new discord.RichEmbed();
+                    embed.setTitle(`~ Initiative Order ~`);
+                    embed.addField(`**Up now:**`, `${peek[0].name}`);
+                    if (peek[1].pc) {
+                        embed.addField(`**Up next:**`, `${peek[1].name}`);
+                    }
+                    
+                    if(peek[2].pc) {
+                        embed.addField(`**On deck:**`, `${peek[2].name}`);
+                    }
+
+                    msg.channel.send(embed);
                 }
                 break;
             case 'prefix':
                 msg.reply(`My prefix is: ${prefix}. You will be able to use that command to change it soon.`);
                 break;
             case 'weather':
-                var weather = init.getWeather(msg.content.includes('roll'));
+                var weather = fifthEd.ToA.weather(msg.content.includes('roll'));
                 msg.reply(`Temperature is ${weather.temp} degrees Farenheit with ${weather.wind}, and ${weather.precipitation}.`);
                 if(msg.content.includes('ambience')) {
                     ambience(weather.ambience, msg);
@@ -117,6 +126,14 @@ client.on('message', function(msg) {
                 break;
             case 'die':
                 process.exit();
+            case 'chaos':
+                var peek = init.peek();
+                if (peek === undefined) {
+                    msg.channel.send(`Oops! Looks like initiative is empty...`);
+                } else {
+                    msg.channel.send(`The chaos of battle rages around you...`);
+                }
+                break;
             default:
                 msg.reply(`Unrecognized command: ${command}. I would help, but Nathan hasn't written that function yet.`);
                 break;
@@ -135,6 +152,16 @@ exports.attach = function(i) {
 exports.addCharacter = function(char) {
     init.addCharacter(char);
 }
+
+// Sends a packet of data to the init5e frontend
+const postToInit5e = async (msg, payload) => {
+    // post request to init5e app using axios
+    ;(async () => {
+        const response = await axios.post(`${init5eUrl}/friendly-dm`, payload)
+        
+    })()
+}
+
 
 //--------------------------------------------------- Utility ----------------------------------------------------
 
