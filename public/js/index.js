@@ -2,38 +2,55 @@
 // ------------------------------------------------TEMP all of the characters in this combat------------------------------------------------
 const characters = []
 
-// bad bad jank.
-function addFromFile(file) {
-    $.post('/characters', {which: file}, function(res) {
-        res.characters.forEach(element => {
-            element.job = "new_char";
-            $.post( "/initiative", element, function(res) { }); // TODO Error Checking?
+
+function loadEncounter(en) {
+    // Query from the database to lookup the encounter
+    $.get('/data', {encounterName: en}, function(eRes) {
+        // Discard result for now, send it to the .then() function.
+    }).then(function(eRes) {
+        // Check if the encounter is good
+        if (eRes.hasOwnProperty('err')) {
+            logError(eRes.err, en);
+            return;
+        }
+        console.log(eRes);
+        // Update the banner to match the fight details
+        // The naming style of the rows coming out of the db will be in the convention of the database
+        $(`#initiativeTitle`).text(eRes[0].encounter_name);
+        $(`#initiativeDesc`).text(eRes[0].encounter_notes);
+        // Try to get fight details
+        $.get('/data', {fightName: en}, function(fRes) {
+            // Check if the fight actually exists
+            if (fRes.hasOwnProperty('err')) {
+                logError(`Error retrieving fight after good encounter, ${fRes.err}`, en);
+                return;
+            }
+            // Then, for each character in the fight, post to initiative
+            fRes.forEach(element => {
+                    console.log(element);
+                    element.job = "new_char";
+                    $.post( "/initiative", element, function(cp) { }); // TODO Error Checking?
+                });
+        }).then(function() {
+            // Finally, prepare the local initiative list
+            prepareInitiativeList();
         });
-    }).then(function() {
-        prepareInitiativeList();
     });
 }
 
-function clear() {
+function clearInit() {
     $.post("/initiative", {job: "clear"}, function(res) {}).then(function() {
         location.reload();
     });    
 }
 
-// HORRIBLE JANK
-function dragonFight() {
-    clear(); 
-    addFromFile("toa_players.json");
-    addFromFile("tzindelor.json");
-}
-// HORRIBLE JANK
-function salamanderFight() {
-    clear(); 
-    addFromFile("toa_players.json");
-    addFromFile("salamander_fight.json");
+// ----------------------------------------------------- Frontend Util functions ----------------------------------------------------- 
+
+function logError(msg, specifics) {
+    console.error(`INIT_5e | \t${msg}: '${specifics}'`);
 }
 
-// ----------------------------------------------------- Frontend Util functions ----------------------------------------------------- 
+
 
 // This function populates the "Currently" and "Up Next" fields on the jumbotron
 // It also takes the response from the next request and places the information into 

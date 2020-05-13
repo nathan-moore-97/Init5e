@@ -18,7 +18,12 @@
             <div id="hud" class="container">
                 <div class="row">
                     <div class="col">
-                        <h1>The Chaos Engine</h1>
+                        <h1 id="initiativeTitle">The Chaos Engine</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p id="initiativeDesc">The initiative tracker and wargamer disrupter extrodanaire!</p>
                     </div>
                 </div>
                 <div class="row">
@@ -29,12 +34,17 @@
                     <div class="col">
                         <h3>Up Next:</h3>
                         <p id="nextCharacter">none</p>
-                        
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <button type="button" class="btn btn-primary inline" onclick="upNext()">Next</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary inline" onclick="clearInit()">Clear</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary inline" onclick="loadEncounter(`Klarg's Lair`)">Demo</button>
                     </div>
                     <div class="col">
                         <p id="stream"></p>
@@ -43,7 +53,7 @@
             </div>
         </div>
         <label id="dashboard" class="switch switch-text switch-pill switch-danger">
-            <input id="rollAtTop" type="checkbox" class="switch-input" checked>
+            <input id="rollAtTop" type="checkbox" class="switch-input" unchecked>
             <span class="switch-label" data-on="On" data-off="Off"></span>
             <span class="switch-handle">Re-roll at the top of the order</span>
         </label>
