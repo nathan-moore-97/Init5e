@@ -125,7 +125,8 @@ client.on('message', function(msg) {
                 msg.author.send(`Wild Magic Surge: ${fifthEd.WildMagic.surge()}`);
                 break;
             case 'die':
-                process.exit();
+                // process.exit();
+                break;
             case 'chaos':
                 var peek = init.peek();
                 if (peek === undefined) {
@@ -158,7 +159,6 @@ const postToInit5e = async (msg, payload) => {
     // post request to init5e app using axios
     ;(async () => {
         const response = await axios.post(`${init5eUrl}/friendly-dm`, payload)
-        
     })()
 }
 

@@ -13,7 +13,6 @@ function loadEncounter(en) {
             logError(eRes.err, en);
             return;
         }
-        console.log(eRes);
         // Update the banner to match the fight details
         // The naming style of the rows coming out of the db will be in the convention of the database
         $(`#initiativeTitle`).text(eRes[0].encounter_name);
@@ -27,16 +26,16 @@ function loadEncounter(en) {
             }
             // Then, for each character in the fight, post to initiative
             fRes.forEach(element => {
-                    console.log(element);
                     element.job = "new_char";
                     $.post( "/initiative", element, function(cp) { }); // TODO Error Checking?
-                });
+            });
         }).then(function() {
             // Finally, prepare the local initiative list
             prepareInitiativeList();
         });
     });
 }
+
 
 function clearInit() {
     $.post("/initiative", {job: "clear"}, function(res) {}).then(function() {
@@ -72,8 +71,6 @@ function upNext() {
             $.get("/roll", function(res) {});
             prepareInitiativeList();
         }
-        
-
     });
 
     $.post("/initiative", {job: "peek"}, function(res) {
@@ -81,7 +78,6 @@ function upNext() {
     });
     
 }
-
 
 function lookupCurrent() {
     gotoMonster($("#currentCharacter").text());
@@ -125,6 +121,7 @@ function remove(character) {
 
 const prepCharacterAndSend = eventObj => {
     eventObj.preventDefault();
+    // Scoop the character form and send to the init
     $('#addCharacterForm').trigger('reset');
 }
 
@@ -142,5 +139,5 @@ $(function () {
 
 // ------------------------------------------------------------- SETUP -----------------------------------------------------------------
 
-console.log("Welcome to the Init5e Tracker!");
+console.log("Welcome to the ChaosEngine Initiative Tracker!");
 prepareInitiativeList();

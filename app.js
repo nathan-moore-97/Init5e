@@ -92,16 +92,10 @@ app.post("/friendly-dm", function(req, res){
 });
 
 io.on('connection', function(socket) {
-    console.log('DM Connected');
-
-    socket.on('disconnect', function() {
-        console.log('DM disconnected');
-    });
-
+    socket.on('disconnect', function() {});
     socket.on('ping', function(){
         console.log(`ping reply`);
     });
-
 });
 
 // ------------------------------------------------------------------------------
@@ -117,27 +111,35 @@ var con = mysql.createConnection({
 // My database handling
 con.connect(function(err) {
     if (err) throw err;
-    console.log(`Connected to MariaDB[${con.config.database}]`);
+    console.log(`Connected to MySQL[${con.config.database}]`);
 
     // Retrieve database rows
     app.get('/data', function(req, res) {
         var queryString = generateQuery(req.query);
-        con.query(queryString, function(err, data) {
-            if (err) throw err;
-            if (data.length == 0) {
-                res.send({err: `No data matches your input`});
-                res.end();
-            } else {
-                res.send(data);
-                res.end();
-            }
-        });
+        if (queryString === undefined) {
+            res.send({err: `SQL Builder returned empty string. Perhaps GET query parameters are malformed.`});
+            res.end();
+        } else {
+            con.query(queryString, function(err, data) {
+                if (err) throw err;
+                if (data.length == 0) {
+                    res.send({err: `No data matches your input`});
+                    res.end();
+                } else {
+                    res.send(data);
+                    res.end();
+                }
+            });
+        }
     });
 
+    // Add things to the database
     app.post('/data', function(req, res){
         res.send('Cannot post to /data yet!');
         res.end();
-    })
+    });
+
+
 
 });
 
@@ -166,6 +168,7 @@ function generateQuery(body) {
                     combatant_id,
                     dex_mod,
                     race,
+                    ac,
                     speed,
                     spell_save,
                     passive_perception,
@@ -180,7 +183,6 @@ function generateQuery(body) {
                 on lu_character.character_id = lu_fight.combatant_id
                 where encounter_name = '${en}'`;
     }
-    return "select * from lu_fight; select * from lu_character;";
 }
 
 
