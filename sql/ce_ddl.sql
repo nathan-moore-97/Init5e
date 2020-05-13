@@ -56,7 +56,7 @@ insert into lu_character (player_name, char_name, class, race, level, ac, passiv
 values ('David', 'Mûrgrout Mountainforged', 'Cleric', 'Hill Dwarf', 2, 18, 13, 25, 13, NULL, -1, TRUE, FALSE);
 
 insert into lu_character (player_name, char_name, class, race, level, ac, passive_perception, speed, spell_save, notes, dex_mod, pc, init_adv)
-values ('DM', 'Bugbear', 'Chaotic Evil', 'Medium Goblinoid', NULL, 16, 10, 30, NULL, 'Bugbears are hairy goblinoids born for battle and mayhem. They survive by raiding and hunting, but are fond of setting ambushes and fleeing when outmatched.', 2, FALSE, FALSE);
+values ('NPC', 'Bugbear', 'Chaotic Evil', 'Medium Goblinoid', NULL, 16, 10, 30, NULL, 'Bugbears are hairy goblinoids born for battle and mayhem. They survive by raiding and hunting, but are fond of setting ambushes and fleeing when outmatched.', 2, FALSE, FALSE);
 
 -- insert goblin boys
 

@@ -26,8 +26,8 @@ function loadEncounter(en) {
             }
             // Then, for each character in the fight, post to initiative
             fRes.forEach(element => {
-                    element.job = "new_char";
-                    $.post( "/initiative", element, function(cp) { }); // TODO Error Checking?
+                element.job = "new_char";
+                $.post( "/initiative", element, function(cp) { }); // TODO Error Checking?
             });
         }).then(function() {
             // Finally, prepare the local initiative list
@@ -49,32 +49,43 @@ function logError(msg, specifics) {
     console.error(`INIT_5e | \t${msg}: '${specifics}'`);
 }
 
-
-
 // This function populates the "Currently" and "Up Next" fields on the jumbotron
 // It also takes the response from the next request and places the information into 
 // DM Dashboard
 function upNext() {
-    $.post("/initiative", {job: "next"}, function(res) {
-        $("#currentCharacter").text(res.name);
-        $("#detailsCharName").html("<strong>Name: </strong>" + res.name);
-        $("#detailsCharDesc").html("<strong>Notes: </strong>" + res.desc);
+    $.post(`/initiative`, {job: `next`}, function(res) {
+        $(`#currentCharacter`).text(res.name);
+        $(`#detailsCharName`).html(`<strong>Name: </strong>${res.name}`);
+        $(`#detailsPlayerName`).html(`<strong>(${res.player})</strong>`);
+        $(`#detailsCharDesc`).html(`<strong>Notes: </strong>${res.notes}`);
+        
         if(!res.pc) {
-            $("#isNPC").css("display", "block");
-            $("#lookupBtn").css("display", "block");
+            $(`#lookupBtn`).css(`display`, `block`);
+            $(`#detailsAlignment`).html(`<strong>Alignment: </strong>${res.class}`);
+            $(`#detailsClass`).html(`<strong>Class: </strong>none`);
         } else {
-            $("#isNPC").css("display", "none");
-            $("#lookupBtn").css("display", "none");
+            $(`#lookupBtn`).css(`display`, `none`);
+            $(`#detailsClass`).html(`<strong>Class: </strong>${res.class}`);
+            $(`#detailsAlignment`).html(`<strong>Alignment: </strong>${res.alignment}`);
         }
 
-        if (res.topOfOrder && $("#rollAtTop").prop("checked")) {
-            $.get("/roll", function(res) {});
+        $(`#detailsRace`).html(`<strong>Race: </strong>${res.race}`);
+        $(`#detailsLevel`).html(`<strong>Level: </strong>${res.level}`);
+        $(`#detailsSpeed`).html(`<strong>Speed: </strong>${res.speed}`);
+
+        $(`#detailsArmorClass`).html(`<strong>AC: </strong>${res.ac}`);
+        $(`#detailsPassivePerception`).html(`<strong>PP: </strong>${res.passivePerception}`);
+        $(`#detailsSaveDC`).html(`<strong>SDC: </strong>${res.saveDc}`);
+        
+
+        if (res.topOfOrder && $(`#rollAtTop`).prop(`checked`)) {
+            $.get(`/roll`, function(res) {});
             prepareInitiativeList();
         }
     });
 
-    $.post("/initiative", {job: "peek"}, function(res) {
-        $("#nextCharacter").text(res[1].name);
+    $.post(`/initiative`, {job: `peek`}, function(res) {
+        $(`#nextCharacter`).text(res[1].name);
     });
     
 }
@@ -94,7 +105,6 @@ function prepareInitiativeList() {
     // populate the initiative list
     $.get("/initiative", function(res) {
         $("#orderListGroup").empty();
-
         res.forEach(function(elem) {
             console.log(elem);
             $("#orderListGroup").append(

@@ -1,5 +1,5 @@
 #hud {
-    margin-left: 15%;
+    margin-left: 7%;
 }
 
 #pageHeading {}
@@ -21,9 +21,8 @@
     display: none;
 }
 
-
 .card {
-    max-height: 450px;
+    max-height: 420px;
     margin-bottom: 10px;
     overflow:scroll;
     -webkit-overflow-scrolling: touch;
