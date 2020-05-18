@@ -13,9 +13,12 @@ var bot = require('./bot');
 var ip = process.env.IP;
 var port = process.env.WEB_PORT;
 
-var exports = module.exports = {};
 
+var exports = module.exports = {};
 exports.init = init;
+
+var viewState = "tracking";
+
 
 // serve local public files
 app.use(express.static(__dirname + '/public'));
@@ -26,6 +29,21 @@ app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
     res.sendFile('index.html');
+});
+
+app.get('/view', function(req, res){
+    res.send(viewState);
+    res.end();
+});
+
+app.post('/view', function(req, res) {
+    viewState = req.body.viewState;
+    res.send(viewState);
+    res.end();
+});
+
+app.get('/builder', function(req, res) {
+    res.sendFile(`${__dirname}/public/encounterBuilder.html`);
 });
 
 
@@ -49,7 +67,7 @@ app.post('/characters', function(req, res) {
 
 app.post('/initiative', function(req, res) {
     switch (req.body.job) {
-        case "new_char":
+        case "newChar":
             res.send("Adding " + req.body.charName + " to initiative!");
             init.addCharacter(req.body);
             res.end();
@@ -70,6 +88,17 @@ app.post('/initiative', function(req, res) {
         case "clear":
             init.clear();
             res.send("Initiative cleared");
+            res.end();
+            break;
+        case "updateInit":
+            var update = init.updateScore(req.body);
+            init.order();
+            res.send(update);
+            res.end();
+            break;
+        default:
+            req.body.err = `Request received, but unknown job field`;
+            res.send(req.body);
             res.end();
             break;
     }
@@ -135,8 +164,23 @@ con.connect(function(err) {
 
     // Add things to the database
     app.post('/data', function(req, res){
-        res.send('Cannot post to /data yet!');
-        res.end();
+        switch (req.body.job) {
+            case 'newChar':
+                res.send({err: `Adding characters not yet supported`});
+                res.end();
+                break;
+            case 'newEncounter':
+                res.send({err: `Adding encounters not yet supported`});
+                res.end();
+                break;
+            case 'newFight':
+                res.send({err: `Adding new fights not yet supported`});
+                res.end();
+            default:
+                res.send({err: `Unkown post/data job: ${req.body.job}`});
+                res.end();
+                break;
+        }
     });
 
 
@@ -145,6 +189,13 @@ con.connect(function(err) {
 
 // Takes in a req.query object and generates sql to send in response
 function generateQuery(body) {
+
+    if(body.hasOwnProperty('tableName')) {
+        // probably unessesary but oh well
+        var tn = mySqlRealEscapeString(body.tableName);
+        return `select * from lu_${tn}`;
+    }
+
     // Getting a specific character by name
     if (body.hasOwnProperty('charName')) {
         var cn = mySqlRealEscapeString(body.charName);
