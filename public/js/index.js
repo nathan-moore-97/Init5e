@@ -1,3 +1,19 @@
+// TEMP ZONE WOOOO
+
+var new_encounter = {
+    job: `create`,
+    what: `encounter`,
+    name: `Tzindelor's Horde`,
+    notes: `Young Red Dragon that employs a legion of kobolds to tend to her every whim. Tzindelor likes hearing about world events and will question the characters accordingly before fighting.`
+}
+
+var new_fight = {
+    job: `create`,
+    what: `fight`,
+    encounterId: 2,
+    characterIdList: [1, 2, 3, 4, 5, 8]
+}
+
 
 // --------------------------------------------------- VIEW CONTROLS -----------------------------------------------
 const characters = []
@@ -11,7 +27,6 @@ function loadView(state) {
     }
     // get the view state from the server
     $.get('/view', function(res){
-        console.log(res);
         switch (res) {
             case `tracking`:
                 $(`#trackerView`).show();
@@ -32,7 +47,7 @@ function loadView(state) {
 
 function loadEncounter(en) {
     // Query from the database to lookup the encounter
-    $.get('/data', {encounterName: en}, function(eRes) {
+    $.get('/data', {what: `encounter`, name: en}, function(eRes) {
         // Discard result for now, send it to the .then() function.
     }).then(function(eRes) {
         // Check if the encounter is good
@@ -45,7 +60,7 @@ function loadEncounter(en) {
         $(`#initiativeTitle`).text(eRes[0].encounter_name);
         $(`#initiativeDesc`).text(eRes[0].encounter_notes);
         // Try to get fight details
-        $.get('/data', {fightName: en}, function(fRes) {
+        $.get('/data', {what: `fight`, name: en}, function(fRes) {
             // Check if the fight actually exists
             if (fRes.hasOwnProperty('err')) {
                 logError(`Error retrieving fight after good encounter, ${fRes.err}`, en);
@@ -64,7 +79,34 @@ function loadEncounter(en) {
 }
 
 function prepareEncounterList() {
-    console.log("READY THE ENCOUNTERS, JIM");
+    $.get('/data', {tableName: 'encounter'}, function(res){
+        $('#encounterList').empty();
+        res.forEach(function(elem){
+            $('#encounterList').append(
+                `<a id="encounterListItem" class="list-group-item list-group-item-action bg-light" onclick="openEncounterWizard(\`${elem.encounter_name}\`)">${elem.encounter_name}</a>`
+            );
+        });
+    });
+}
+
+function openEncounterWizard(en) {
+    $.get('/data', {encounterName: en}, function(eRes) {
+        // Discard result for now, send it to the .then() function.
+    }).then(function(eRes) {
+        // Check if the encounter is good
+        if (eRes.hasOwnProperty('err')) {
+            logError(eRes.err, en);
+            return;
+        }
+        // Try to get fight details
+        $.get('/data', {fightName: en}, function(fRes) {
+            // Check if the fight actually exists
+            if (fRes.hasOwnProperty('err')) {
+                logError(`Error retrieving fight after good encounter, ${fRes.err}`, en);
+                return;
+            }
+        }).then(function() {});
+    });
 }
 
 
@@ -159,6 +201,8 @@ function remove(character) {
     });
 }
 
+
+
 const postNewCharacterToDatabase = eventObj => {
     eventObj.preventDefault();
     var payload = {job: 'newChar'};
@@ -180,6 +224,7 @@ const postNewCharacterToDatabase = eventObj => {
 
     $.post('/data', payload, function(res) {
         if(!res.hasOwnProperty('err')) {
+            console.log(res);
             $('#addCharacterForm').trigger('reset');
             $('#newCharacterModal').fadeOut();
         } else {
@@ -219,7 +264,7 @@ const updateInitEvent = eventObj => {
         eventObj.preventDefault();
     }
 
-    $.post('/initiative', {job: 'updateInit', which: editing, val: $("#newInitScoreField").val()}, function(res) {
+    $.post('/initiative', {job: 'updateInit', which: editing, score: $("#newInitScoreField").val()}, function(res) {
         console.log(`Updating ${res.name}: INIT=${res.init}`);
     }).then(function() {
         prepareInitiativeList();
@@ -240,6 +285,13 @@ $(function () {
     socket.on('ping', function(payload){
         if (payload != undefined) {
             $('#stream').text(payload);
+        }
+    });
+
+    socket.on('init', function(payload) {
+        if(payload != undefined) {
+            prepareInitiativeList();
+            $('#stream').text(`${payload.which} set init to ${payload.score}`);
         }
     });
 });

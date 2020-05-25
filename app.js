@@ -10,6 +10,7 @@ var io = require('socket.io')(http)
 // local modules
 var init = require('./dnd5e').Initiative;
 var bot = require('./bot');
+var dbu = require('./lib/Chaos5eDbUtils')
 var ip = process.env.IP;
 var port = process.env.WEB_PORT;
 
@@ -91,7 +92,7 @@ app.post('/initiative', function(req, res) {
             res.end();
             break;
         case "updateInit":
-            var update = init.updateScore(req.body);
+            var update = init.updateScoreById(req.body);
             init.order();
             res.send(update);
             res.end();
@@ -109,13 +110,19 @@ app.post('/initiative', function(req, res) {
 app.post("/friendly-dm", function(req, res){
     switch(req.body.job) {
         case 'ping':
-            console.log(req.body);
             io.emit('ping', req.body.data);
             res.send("init5e frontend successfully pinged");
             res.end();
             break;
+        case 'init':
+            var udpate = init.updateScoreByName(req.body);
+            init.order();
+            io.emit('init', {which: req.body.which, score: req.body.score});
+            res.send(`Updated ${req.which} to ${res.score}`);
+            res.end();
+            break;
         default:
-            console.log(req.body)
+            console.log(req.body);
             break;
     }
 });
@@ -144,14 +151,21 @@ con.connect(function(err) {
 
     // Retrieve database rows
     app.get('/data', function(req, res) {
-        var queryString = generateQuery(req.query);
-        if (queryString === undefined) {
-            res.send({err: `SQL Builder returned empty string. Perhaps GET query parameters are malformed.`});
+        var q = req.query;
+        q.job = 'get';
+        var sql = dbu.sqlBuilder(q);
+        // console.log(q);
+        // var queryString = generateLookupQuery(req.query);
+        if (sql.err !=  undefined) {
+            res.send(sql);
             res.end();
         } else {
-            con.query(queryString, function(err, data) {
-                if (err) throw err;
-                if (data.length == 0) {
+            // the GET instructions will always have one line
+            con.query(sql.ins, function(err, data) {
+                if (err) {
+                    res.send({err: `${err.code}: ${err.sqlMessage}`});
+                    res.end();
+                } else if (data.length == 0) {
                     res.send({err: `No data matches your input`});
                     res.end();
                 } else {
@@ -162,107 +176,26 @@ con.connect(function(err) {
         }
     });
 
-    // Add things to the database
+    // CREATE, RETRIEVE, UPDATE, DELETE
     app.post('/data', function(req, res){
-        switch (req.body.job) {
-            case 'newChar':
-                res.send({err: `Adding characters not yet supported`});
-                res.end();
-                break;
-            case 'newEncounter':
-                res.send({err: `Adding encounters not yet supported`});
-                res.end();
-                break;
-            case 'newFight':
-                res.send({err: `Adding new fights not yet supported`});
-                res.end();
-            default:
-                res.send({err: `Unkown post/data job: ${req.body.job}`});
-                res.end();
-                break;
+        var sql = dbu.sqlBuilder(req.body);
+        if(sql.err != undefined) {
+            res.send(sql);
+            res.end();
+        } else {
+            con.query(sql.ins, function(err, data) {
+                if (err) {
+                    res.send({err: `${err.code}: ${err.sqlMessage}`});
+                    res.end();
+                    return;
+                } else {
+                    res.send(`Action completed successfully`);
+                    res.end();
+                }
+            });
         }
     });
-
-
-
 });
-
-// Takes in a req.query object and generates sql to send in response
-function generateQuery(body) {
-
-    if(body.hasOwnProperty('tableName')) {
-        // probably unessesary but oh well
-        var tn = mySqlRealEscapeString(body.tableName);
-        return `select * from lu_${tn}`;
-    }
-
-    // Getting a specific character by name
-    if (body.hasOwnProperty('charName')) {
-        var cn = mySqlRealEscapeString(body.charName);
-        return `select * from lu_character where char_name = '${cn}'`
-    }
-
-    // return specific encounter
-    if (body.hasOwnProperty('encounterName')) {
-        var en = mySqlRealEscapeString(body.encounterName);
-        return `select * from lu_encounter where encounter_name = '${en}'`;
-    }
-
-    // return specific initiative list
-    if (body.hasOwnProperty('fightName')) {
-        var en = mySqlRealEscapeString(body.fightName);
-        return `select 
-                    player_name,
-                    char_name, 
-                    character_id, 
-                    class,
-                    combatant_id,
-                    dex_mod,
-                    race,
-                    ac,
-                    speed,
-                    spell_save,
-                    passive_perception,
-                    init_adv,
-                    level,
-                    pc,
-                    notes
-                from lu_encounter 
-                join lu_fight 
-                on lu_encounter.encounter_id = lu_fight.encounter_id
-                join lu_character
-                on lu_character.character_id = lu_fight.combatant_id
-                where encounter_name = '${en}'`;
-    }
-}
-
-
-function mySqlRealEscapeString (str) {
-    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
-        switch (char) {
-            case "\0":
-                return "\\0";
-            case "\x08":
-                return "\\b";
-            case "\x09":
-                return "\\t";
-            case "\x1a":
-                return "\\z";
-            case "\n":
-                return "\\n";
-            case "\r":
-                return "\\r";
-            case "\"":
-            case "'":
-            case "\\":
-            case "%":
-                return "\\"+char; // prepends a backslash to backslash, percent,
-                                  // and double/single quotes
-            default:
-                return char;
-        }
-    });
-}
 
 // -----------------------------------------------------------------------------
 

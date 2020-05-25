@@ -55,6 +55,9 @@ client.on('message', function(msg) {
                 // Async function will deal with the reply
                 postToInit5e(msg, {job: 'ping', data: `${msg.author.username} pinged you!`});
                 break;
+            case 'init':
+                postToInit5e(msg, {job: 'init', which: msg.content.split(' ')[1], score: parseInt(msg.content.split(' ')[2])});
+                break;
             case 'tip':
                 // grab a random index from the list of files
                 var index = between(0, temp.length);
@@ -156,6 +159,7 @@ exports.addCharacter = function(char) {
 
 // Sends a packet of data to the init5e frontend
 const postToInit5e = async (msg, payload) => {
+    console.log(payload)
     // post request to init5e app using axios
     ;(async () => {
         const response = await axios.post(`${init5eUrl}/friendly-dm`, payload)
