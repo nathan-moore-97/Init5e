@@ -17,8 +17,9 @@ create table lu_character (
     spell_save integer(10),
     notes varchar(1000),
     -- initiative processing information
-    dex_mod integer(10) not null, 
+    dex integer(10) not null, 
     pc boolean,
+    alignment varchar(25),
     init_adv boolean,
     primary key (character_id)
 );

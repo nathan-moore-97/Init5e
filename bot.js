@@ -56,7 +56,10 @@ client.on('message', function(msg) {
                 postToInit5e(msg, {job: 'ping', data: `${msg.author.username} pinged you!`});
                 break;
             case 'init':
-                postToInit5e(msg, {job: 'init', which: msg.content.split(' ')[1], score: parseInt(msg.content.split(' ')[2])});
+                var spl = msg.content.split(' ');
+                var newInit = parseInt(spl[spl.length - 1]);
+                var charName = smushify(spl.slice(1, spl.length - 1));
+                postToInit5e(msg, {job: 'init', which: charName, score: newInit});
                 break;
             case 'tip':
                 // grab a random index from the list of files
@@ -162,10 +165,19 @@ const postToInit5e = async (msg, payload) => {
     console.log(payload)
     // post request to init5e app using axios
     ;(async () => {
-        const response = await axios.post(`${init5eUrl}/friendly-dm`, payload)
+        const response = await axios.post(`${init5eUrl}/friendly-dm`, payload);
+        console.log(response);
+        switch (payload.job) {
+            case 'init':
+                if (response.data.err != undefined) {
+                    msg.reply(response.data.err);
+                } else {
+                    msg.reply(response.data);
+                }
+                break;
+        }
     })()
 }
-
 
 //--------------------------------------------------- Utility ----------------------------------------------------
 
@@ -174,6 +186,14 @@ const postToInit5e = async (msg, payload) => {
  */
 function between(min, max) {  
     return Math.floor(Math.random() * (max - min) + min);
+}
+
+function smushify(strLi) {
+    var smushed = "";
+    strLi.forEach(element => {
+        smushed += `${element} `
+    });
+    return smushed.trim();
 }
 
 // ---------------------------------------------------- Music ----------------------------------------------------
@@ -197,9 +217,9 @@ function play(connection, song) {
 		return;
 	}
 
-	const dispatcher = connection.playStream(ytdl(song.url))
-		.on('error', error => {
-			console.error(error);
-		});
+	const dispatcher = connection.playStream(ytdl(song.url)).on('error', error => {
+        console.error(error);
+    });
+    
 	dispatcher.setVolumeLogarithmic(.5);
 }

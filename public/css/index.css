@@ -1,3 +1,7 @@
+#building {
+    height: 50%;
+}
+
 #hud {
     margin-left: 7%;
 }
@@ -17,7 +21,7 @@
     margin-right: 7%;
 }
 
-#btnRemoveCharById {
+#btnRemoveCharById, #btnShowCharDetailsById {
     cursor: pointer;
 }
 
@@ -62,7 +66,7 @@
     width: 25%;
 }
 
-#newCharacterModalContent {
+#newCharacterModalContent, #newEncounterModalContent {
     width: 50%;
     margin: 5% auto;
 }
@@ -112,8 +116,18 @@ body {
     margin-left: 0;
 }
 
-#encounterListItem {
+#encounterListItem, #combatantListItem {
     cursor: pointer;
+    color: black;
+}
+
+.combatantListItem {
+    cursor: pointer;
+    color: black;
+}
+
+#encounterList, #combatantList, #lookupCombatantList {
+    overflow: scroll;
 }
 
 @media (min-width: 768px) {
@@ -131,3 +145,18 @@ body {
     }
 }
 
+.bg-light {
+    background-color: #ebedef;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    background-color: lightgrey;
+}
+
+.selected {
+    background-color: lightblue !important;
+}

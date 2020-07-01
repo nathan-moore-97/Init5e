@@ -4,12 +4,15 @@
        <title>Init5e</title>
        <!-- CoreUI -->
        <link rel="stylesheet" href="https://unpkg.com/@coreui/coreui@3.0.0-rc.0/dist/css/coreui.min.css">
-       <!-- Spot check CSS -->
-       <link rel="stylesheet" href="css/index.css">
        <!-- JQuery -->
        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
        <!-- Latest compiled JavaScript -->
        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <!-- Spot check CSS -->
+        <link rel="stylesheet" href="css/index.css">
+       <!-- Favicon -->
+       <link rel="icon" type="image/png" href="../media/dnd.png" sizes="32x32">
+       <link rel="icon" type="image/png" href="../media/dnd.png" sizes="16x16">
        <!-- Socket.io integration -->
        <script src="/socket.io/socket.io.js"></script>
     </head>
@@ -20,7 +23,7 @@
                 <!-- Modal content -->
                 <div id="updateInitModalContent" class="modal-content">
                     <!-- <h2>Update Initiative Roll</h2> -->
-                    <form id="formUpdateInitScore" onsubmit="updateInitEvent(event)">
+                    <form id="formUpdateInitScore" onsubmit="updateInitEvent(event)" autocomplete="off">
                         <div class="form-group">
                             <label id="newInitScoreFieldLabel" for="newInitScoreField">Update Initiative Roll</label>
                             <input type="text" class="form-control" id="newInitScoreField" placeholder="New initiative score">
@@ -58,9 +61,6 @@
                         </div>
                         <div class="col">
                             <button type="button" class="btn btn-primary inline" onclick="clearInit()">Clear</button>
-                        </div>
-                        <div class="col">
-                            <button type="button" class="btn btn-primary inline" onclick="loadEncounter(`Klarg's Lair`)">Demo</button>
                         </div>
                         <div class="col">
                             <button type="button" class="btn btn-primary inline" onclick="loadView('building')">Encounters</button>
@@ -162,8 +162,26 @@
         </div>
         <div id="builderView">
 
+            <!-- New encounter modal -->
+            <div id="newEncounterModal" class="modal">
+                <div id="newEncounterModalContent" class="modal-content">
+                    <form id="addEncounterForm" onsubmit="postNewEncounterToDatabase(event)" autocomplete="off">
+                        <div class="form-group">
+                            <label for="encounterNameField">Name</label>
+                            <input type="text" class="form-control" id="encounterNameField">
+                        </div>
+                        <div class="form-group">
+                            <label for="encounterDescriptionField">Description / Notes</label>
+                            <textarea class="form-control" id="encounterDescriptionField" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>    
+                    </form>
+                </div>
+            </div>
+
+            <!-- New Character modal -->
             <div id="newCharacterModal" class="modal">
-                <!-- Modal content -->
+               
                 <div id="newCharacterModalContent" class="modal-content">
                     <h4 class="card-title">Add Character</h4>
                     <p class="card-text">Use this form to add a new character to the stored encounter database</p>
@@ -250,8 +268,8 @@
                                 <span class="switch-handle">Advantage on initiative</span>
                             </label>
                             <div class="form-group">
-                                <label for="descriptionField">Description / Notes</label>
-                                <textarea class="form-control" id="descriptionField" rows="3"></textarea>
+                                <label for="characterDescriptionField">Description / Notes</label>
+                                <textarea class="form-control" id="characterDescriptionField" rows="3"></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>    
                         </container>
@@ -266,55 +284,105 @@
                             <h1 id="builderTitle">Encounter Builder</h1>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <p id="builderDesc">Description for the encounter builder that I havent come up with something for yet</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <button type="button" class="btn btn-primary inline" onclick="openNewCharacterModal()">Add Character</button>
-                        </div>
-                        <div class="col">
-                            <button type="button" class="btn btn-primary inline" onclick="loadView('tracking')">Initiative</button>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col">
+                                <button class="btn btn-primary" onclick="openNewEncounterModal()">Create Encounter</button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-primary" onclick="openNewCharacterModal()">Create Character</button>
+                            </div>
+                            <div class="col">
+                                <button id="commitToFightBtn" class="btn btn-primary" onclick="commitToFight()" disabled>Commit Fight</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="d-flex" id="wrapper">
-
                 <!-- Sidebar -->
                 <div class="bg-light border-right" id="sidebar-wrapper">
-                  <div class="sidebar-heading">Encounter List </div>
-                  <div id="encounterList" class="list-group list-group-flush"></div>
+                    <!-- <div class="sidebar-heading">Encounter List </div> -->
+                    <div id="encounterList" class="list-group list-group-flush"></div>
                 </div>
                 <!-- /#sidebar-wrapper -->
             
                 <!-- Page Content -->
                 <div id="page-content-wrapper">
             
-                  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                      <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-                        <li class="nav-item active">
-                          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Link</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </nav>
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                                <li class="nav-item active">
+                                    <a class="nav-link" onclick="loadView('tracking')" id="openInitiativeButton">Initiative<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active">
+                                    <a class="nav-link" id="deleteEncounterButton" onclick="">Delete Combat<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active">
+                                    <a class="nav-link" id="editEncounterButton" onclick="">Edit Encounter<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active">
+                                    <a class="nav-link" id="startCombatButton" onclick="">Start Combat<span class="sr-only">(current)</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
             
-                  <div class="container-fluid">
-                    <h1 class="mt-4">Simple Sidebar</h1>
-                    <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-                    <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
-                  </div>
+                    <div class="container-fluid">
+                        <h1 id="wizardTitle" class="mt-4">Encounter Builder</h1>
+                        <p id="wizardDescription">Use the list to the left to open the wizard and add combatants to the fight! If there are no encounters yet, <button class="btn btn-primary" onclick="openNewEncounterModal()">add one!</button></p>
+                        <div class="bg-light border-right" id="sidebar-wrapper">
+                            <!-- <div class="sidebar-heading">Encounter List </div> -->
+                            <div id="combatantList" class="list-group list-group-flush"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="page-content-wrapper">
+            
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                                <li class="nav-item active">
+                                    <a class="nav-link" id="addLookupCharacter">Add<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active">
+                                    <a class="nav-link" id="addLookupCharacterAlias">Add Alias<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active">
+                                    <a class="nav-link" id="deleteLookupCharacter">Delete<span class="sr-only">(current)</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+            
+                    <div class="container-fluid">
+                        <h1 id="characterFinder" class="mt-4">Characters</h1>
+                        <p id="wizardDescription">Add characters to the encounter</p>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <div id="characterCatalogList" class="list-group list-group-flush">
+                                        <form type="text" onsubmit="searchDatabaseForCharacter(event)">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="searchDatabaseForCharacterField" placeholder="'Ex: Adult Red Dragon'">
+                                            </div>
+                                        </form>
+                                        <div class="bg-light border-right" id="sidebar-wrapper">
+                                            <!-- <div class="sidebar-heading">Encounter List </div> -->
+                                            <div id="lookupCombatantList" class="list-group list-group-flush"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <ul id="stagedCombatantList" class="list-group"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- /#page-content-wrapper -->
-            
-              </div>
+            </div>
         </div>
     </body>
     <script src="js/index.js"></script>

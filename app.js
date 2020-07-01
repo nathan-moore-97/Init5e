@@ -18,7 +18,7 @@ var port = process.env.WEB_PORT;
 var exports = module.exports = {};
 exports.init = init;
 
-var viewState = "tracking";
+var viewState = "building";
 
 
 // serve local public files
@@ -49,8 +49,13 @@ app.get('/builder', function(req, res) {
 
 
 app.get('/initiative', function(req, res) {
-    res.send(init.getOrder());
-    res.end();
+    if(req.query.id != undefined) {
+        res.send(init.get(parseInt(req.query.id)));
+        res.end();
+    } else {
+        res.send(init.getOrder());
+        res.end();
+    }
 });
 
 app.get('/roll', function(req, res) {
@@ -97,6 +102,27 @@ app.post('/initiative', function(req, res) {
             res.send(update);
             res.end();
             break;
+        case "shuffle":
+            switch (req.body.type) {
+                case "swap":
+                    res.send(init.swapShuffle(req.body.pin));
+                    res.end();
+                    break;
+                case "full":
+                    res.send(init.fullShuffle(req.body.pin));
+                    res.end();
+                    break;
+                case "expertise":
+                    res.send(init.expertiseShuffle(req.body.pin));
+                    res.end();
+                    break;
+                case "anticipation":
+                default:
+                    res.send(init.anticipationShuffle(req.body.pin));
+                    res.end();
+                    break;
+            }
+            break;
         default:
             req.body.err = `Request received, but unknown job field`;
             res.send(req.body);
@@ -115,23 +141,27 @@ app.post("/friendly-dm", function(req, res){
             res.end();
             break;
         case 'init':
-            var udpate = init.updateScoreByName(req.body);
-            init.order();
-            io.emit('init', {which: req.body.which, score: req.body.score});
-            res.send(`Updated ${req.which} to ${res.score}`);
-            res.end();
+            var character = init.getByName(req.body);
+            if(character.pc) {
+                var udpate = init.updateScoreByName(req.body);
+                init.order();
+                io.emit('init', {which: req.body.which, score: req.body.score});
+                res.send(`Updated ${req.body.which} to ${req.body.score}`);
+                res.end();
+            } else {
+                res.send({err: 'you can only update player character initiatives!'});
+                res.end();
+            }
+            
             break;
         default:
-            console.log(req.body);
             break;
     }
 });
 
 io.on('connection', function(socket) {
     socket.on('disconnect', function() {});
-    socket.on('ping', function(){
-        console.log(`ping reply`);
-    });
+    socket.on('ping', function(){});
 });
 
 // ------------------------------------------------------------------------------
@@ -154,8 +184,7 @@ con.connect(function(err) {
         var q = req.query;
         q.job = 'get';
         var sql = dbu.sqlBuilder(q);
-        // console.log(q);
-        // var queryString = generateLookupQuery(req.query);
+        
         if (sql.err !=  undefined) {
             res.send(sql);
             res.end();

@@ -4,7 +4,8 @@
   "description": "This module will provide an api for a simple web-based initiative tracker",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron main.js"
   },
   "author": "Nathan Moore",
   "license": "ISC",
@@ -18,10 +19,14 @@
     "ffmpeg": "0.0.4",
     "http": "0.0.0",
     "mysql": "^2.18.1",
+    "node-fetch": "^2.6.0",
     "node-opus": "^0.3.3",
     "path": "^0.12.7",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "ytdl-core": "^2.0.0"
+  },
+  "devDependencies": {
+    "electron": "^9.0.1"
   }
 }
